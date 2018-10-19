@@ -359,7 +359,7 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 					g.setColor(Color.RED);
 					g.fillRect(j * size, i * size, size, size);
 				}
-				else if(cells[i][j] == INFECTED) {
+				else if(cells[i][j] >= INFECTED && cells[i][j] <= INFECTED+duration) {
 					g.setColor(Color.GREEN);
 					g.fillRect(j * size, i * size, size, size);
 				}
@@ -400,15 +400,15 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 		int yCells = pic.getHeight(null) / size; //ycells
 		int xCells = pic.getWidth(null) / size;  //xcells
     	Point result = new Point(row, col);
-//		for (int i = -1; i <= 1; i++) {
-//			for (int j = -1; j <= 1; j++) {
-//				if (cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] == EMPTY) {
-//					if ((Math.random()*100)<25.0) {
-//						result = new Point((yCells + i + row) % yCells, (xCells + j + col) % xCells);
-//					}
-//				}
-//			}
-//		}
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if (cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] == EMPTY) {
+					if ((Math.random()*100)<25.0) {
+						result = new Point((yCells + i + row) % yCells, (xCells + j + col) % xCells);
+					}
+				}
+			}
+		}
     	return result;
     }
     
@@ -500,20 +500,22 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 			    	Point unvac = new Point(i, j);
 			    	changed.add(unvac);
 			    }
-				else if(cells[i][j] >= INFECTED && cells[i][j]<=INFECTED+duration){
-					Point unvac = new Point(i, j);
-					changed.add(unvac);
+				else if (cells[i][j] >= INFECTED && cells[i][j] < INFECTED+duration){
+					cells[i][j]++;
+				}
+				else if (cells[i][j] >= INFECTED+duration && cells[i][j] < RECOVERED){
+					Point recover = new Point(i, j);
+					changed.add(recover);
 				}
 			    }
 			
     }
 
     	for(Point p : changed) {
-			if(cells[(int) p.getY()][(int) p.getX()] >= INFECTED &&
-					cells[(int) p.getY()][(int) p.getX()]<= INFECTED+duration){
-				cells[(int) p.getY()][(int) p.getX()]++;
-				System.out.println(cells[(int) p.getY()][(int) p.getX()]);
-
+			if(cells[(int) p.getY()][(int) p.getX()] == INFECTED+duration){
+				infectedCount--;
+				recoveredCount++;
+				cells[(int) p.getY()][(int) p.getX()] = RECOVERED;
 			}
     		else if(cells[(int) p.getY()][(int) p.getX()] == UNVAC){
     			susceptible--;
@@ -525,12 +527,7 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     			infectedCount++;
     			cells[(int) p.getY()][(int) p.getX()] = INFECTED;
     		}
-    		else if(cells[(int) p.getY()][(int) p.getX()] > INFECTED+duration
-			&& cells[(int) p.getY()][(int) p.getX()]< RECOVERED){
-    			infectedCount--;
-    			recoveredCount++;
-				cells[(int) p.getY()][(int) p.getX()] = RECOVERED;
-			}
+
     	
   	}
     	//lastly, let cells wander and stop the sim if there's nothing that can infect anything
