@@ -74,14 +74,14 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 	private Timer timer;
 	private boolean isRunning;
 	
-	public static final int EMPTY = 0;		//static final variables are like global constants
-	public static final int VAC = 1;		//describing these numbers like this reminds you of what they mean
-	public static final int UNVAC = 2;		//final means you're not changing their values (i.e., constants)
+	public static final int EMPTY = 0;
+	public static final int VAC = 1;
+	public static final int UNVAC = 2;
 	public static final int INFECTED = 3;
-	public static final int RECOVERED = Integer.MAX_VALUE;	//max val because of how the duration of infection is implemented...
+	public static final int RECOVERED = Integer.MAX_VALUE;
 	
     public Epidemiology3(int xDim, int yDim) {
-        super(new GridBagLayout());                       				// set up graphics window
+        super(new GridBagLayout());
         setBackground(Color.LIGHT_GRAY);
 		addMouseListener(new MAdapter());
 		addMouseMotionListener(new MAdapter());
@@ -310,9 +310,6 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				speedIndex = (speedIndex + 1) % 4;
 				timer.setDelay(speeds[speedIndex]);
-				//so, this is a switch statement
-				//if a variable has multiple, but limited, options, a switch statement makes a great substitute for a bunch of if statements
-				//note the syntax
 				switch (speedIndex) {
 				case 0 : {
 					speedBtn.setText("Speed = Slow");
@@ -329,8 +326,8 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 				case 3 : {
 					speedBtn.setText("Speed = Whoa");
 					break;
-				}//closes case 3
-				}//closes the switch statement
+				}
+				}
 			}
 		});
     }
@@ -348,27 +345,25 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     }
         
     public void drawCells(Graphics g) {
-    	//for each cell in the cells 2d array
-    	//draw them with their appropriate color in the main panel
-    	//remember that a given cell's value now represents the state of that cell, and so the colors array should be invoked appropriately
-    	for (int i = 0; i < cells.length; i++) { //draw the cells in every iteration
+    	for (int i = 0; i < cells.length; i++) {
 			for (int j = 0; j < cells[i].length; j++) {
 				if (cells[i][j] == EMPTY) {
 					g.setColor(Color.WHITE);
 					g.fillRect(j * size, i * size, size, size);
-				} if(cells[i][j] == VAC) {
+				}
+				else if(cells[i][j] == VAC) {
 					g.setColor(Color.YELLOW);
 					g.fillRect(j * size, i * size, size, size);
 				}
-				if(cells[i][j] == UNVAC) {
+				else if(cells[i][j] == UNVAC) {
 					g.setColor(Color.RED);
 					g.fillRect(j * size, i * size, size, size);
 				}
-				if(cells[i][j] == INFECTED) {
+				else if(cells[i][j] == INFECTED) {
 					g.setColor(Color.GREEN);
 					g.fillRect(j * size, i * size, size, size);
 				}
-				if(cells[i][j] == RECOVERED) {
+				else if(cells[i][j] == RECOVERED) {
 					g.setColor(Color.BLACK);
 					g.fillRect(j * size, i * size, size, size);
 				}
@@ -382,12 +377,8 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     	susceptible = 0;
     	infectedCount = 0;
     	recoveredCount = 0;
-    	
-    	//using a double for loop...
-    	//for each cell, with a probability of "density" chance of happening
-    	//fill that cell with a living member, and again probabilistically determine if it's vaccinated
-    	//update the corresponding counter appropriately
-    	for (int i = 0; i < cells.length; i++) { //draw the cells in every iteration
+
+    	for (int i = 0; i < cells.length; i++) {
 			for (int j = 0; j < cells[i].length; j++) {
 				if(Math.random()<density){
 					cells[i][j] = 2;
@@ -400,7 +391,6 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 				}
 			}
     	}
-    	//your code goes here
     	
 		isRunning = false;
     }
@@ -439,8 +429,6 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 
 
 
-    //perhaps there's a better way to write this...
-    //if you can't find one, though, comment this code to demonstrate you know what's going on
     public void moveAllCells() {
     	Point reloc = null;
     	int choice = (int)(Math.random() * 4);
@@ -501,16 +489,13 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     //as in game of life, go through all the cells and figure out what happens to each and every one of them
     public void updateCells() {
     	ArrayList<Point> changed = new ArrayList<Point>();
-    	for (int i = 0; i < cells.length; i++) { //draw the cells in every iteration
+    	for (int i = 0; i < cells.length; i++) { 
 			for (int j = 0; j < cells[i].length; j++) {
-			    if(cells[i][j] == EMPTY || cells[i][j] == RECOVERED){ 
-				}
-			    
 			    if(cells[i][j] == VAC && (Math.random()*100)<vacInfRate && canCatch(i,j)){
 			    	Point vac = new Point(i, j);
 			    	changed.add(vac);
 			    }
-			    if(cells[i][j] == UNVAC && (Math.random()*100)<unvacInfRate && canCatch(i,j)){
+			    else if(cells[i][j] == UNVAC && (Math.random()*100)<unvacInfRate && canCatch(i,j)){
 			    	Point unvac = new Point(i, j);
 			    	changed.add(unvac);
 			    }
@@ -591,7 +576,6 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 					drawCells(pic.getGraphics());
 				}
 			} catch (ArrayIndexOutOfBoundsException e2) {
-				//I don't actually want anything to happen if the try errors
 			}
 		}
 
