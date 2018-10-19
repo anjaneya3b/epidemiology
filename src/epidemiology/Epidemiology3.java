@@ -397,29 +397,31 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     
     //attempts to allow the entity at location row,col to walk to a nearby location
     public Point findEmpty(int row, int col) {
-    	//make the default response be no empty spot found
+		int yCells = pic.getHeight(null) / size; //ycells
+		int xCells = pic.getWidth(null) / size;  //xcells
     	Point result = new Point(row, col);
-    
-    	//otherwise, let the computer try for a number of times to...
-    	//...select a new random location _adjacent_ to its current location
-    	//...determine if that location is empty -- if it is, return that location
-    	//if it fails to find a valid location after it's tried a few times, give up and return its current location
-    //row = 1 col = 1 depending on circumstances
-    	//your code goes here
-
+//		for (int i = -1; i <= 1; i++) {
+//			for (int j = -1; j <= 1; j++) {
+//				if (cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] == EMPTY) {
+//					if ((Math.random()*100)<25.0) {
+//						result = new Point((yCells + i + row) % yCells, (xCells + j + col) % xCells);
+//					}
+//				}
+//			}
+//		}
     	return result;
     }
     
     //returns true if there's an infected (or worse, but not recovered) cell adjacent to row,col, false otherwise
     public boolean canCatch(int row, int col) {
-    	//this code will be similar, to some extent, to countNeighbors in the GameOfLife code
     	int yCells = pic.getHeight(null) / size; //ycells
 		int xCells = pic.getWidth(null) / size;  //xcells
 		if (cells[row][col] == UNVAC || cells[row][col] == VAC){
 			
 		for (int i = -1; i <= 1; i++) 
 			for (int j = -1; j <= 1; j++){
-		if(cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] == INFECTED){ 
+		if(cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] >= INFECTED &&
+				cells[(yCells + i + row) % yCells][(xCells + j + col) % xCells] <= INFECTED+duration){
 			return true;
 		}
 			}
@@ -485,11 +487,10 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     	}
 
     }
-    
-    //as in game of life, go through all the cells and figure out what happens to each and every one of them
+
     public void updateCells() {
     	ArrayList<Point> changed = new ArrayList<Point>();
-    	for (int i = 0; i < cells.length; i++) { 
+    	for (int i = 0; i < cells.length; i++) {
 			for (int j = 0; j < cells[i].length; j++) {
 			    if(cells[i][j] == VAC && (Math.random()*100)<vacInfRate && canCatch(i,j)){
 			    	Point vac = new Point(i, j);
@@ -499,33 +500,37 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 			    	Point unvac = new Point(i, j);
 			    	changed.add(unvac);
 			    }
+				else if(cells[i][j] >= INFECTED && cells[i][j]<=INFECTED+duration){
+					Point unvac = new Point(i, j);
+					changed.add(unvac);
+				}
 			    }
 			
     }
-    
-    	//make an ArrayList of Points to keep track of which cells need to change
-    	//in a double for loop...
-    	//if a cell is flagged recovered or empty nothing needs to happen
-    	//	if a cell is infected, check if the disease duration has lapped.  If it has, add it to the list of cells to change
-    	//		if it hasn't, add 1 to its current value to step it closer to its duration wearing off 
-    	//  if a cell is not infected, see if it could get infected, try to infect it pending its vaccination
-    	//		if infection is successful, add the cell to the list of cells to change and adjust the appropriate counters
 
-    	//your code goes here
-        	
-    	//in a separate for loop after all that stuff above, go through the list of cells that need to change
-    	//change them and adjust appropriate counters
     	for(Point p : changed) {
-    		if(cells[(int) p.getY()][(int) p.getX()] == UNVAC){
+			if(cells[(int) p.getY()][(int) p.getX()] >= INFECTED &&
+					cells[(int) p.getY()][(int) p.getX()]<= INFECTED+duration){
+				cells[(int) p.getY()][(int) p.getX()]++;
+				System.out.println(cells[(int) p.getY()][(int) p.getX()]);
+
+			}
+    		else if(cells[(int) p.getY()][(int) p.getX()] == UNVAC){
     			susceptible--;
     			infectedCount++;
     			cells[(int) p.getY()][(int) p.getX()] = INFECTED;
     		}
-    		if(cells[(int) p.getY()][(int) p.getX()] == VAC){
+    		else if(cells[(int) p.getY()][(int) p.getX()] == VAC){
     			vaccinated--;
     			infectedCount++;
     			cells[(int) p.getY()][(int) p.getX()] = INFECTED;
     		}
+    		else if(cells[(int) p.getY()][(int) p.getX()] > INFECTED+duration
+			&& cells[(int) p.getY()][(int) p.getX()]< RECOVERED){
+    			infectedCount--;
+    			recoveredCount++;
+				cells[(int) p.getY()][(int) p.getX()] = RECOVERED;
+			}
     	
   	}
     	//lastly, let cells wander and stop the sim if there's nothing that can infect anything
