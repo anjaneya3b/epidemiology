@@ -536,7 +536,7 @@ public class Epidemiology3 extends JPanel implements ActionListener {
     }
     
     
-    public void updateLabels() {//self-explanatory
+    public void updateLabels() {
     	vacLbl.setText(" " + vaccinated);
     	susLbl.setText(" " + susceptible);
     	infLbl.setText(" " + infectedCount);
@@ -554,13 +554,11 @@ public class Epidemiology3 extends JPanel implements ActionListener {
 		updateLabels();
 		repaint();
 	}
-	
-	//where the mouse handler goes
+
 	private class MAdapter extends MouseAdapter {
 		
 		@Override
 		public void mousePressed(MouseEvent e) {
-			//comment this code appropriately
 			Point p = new Point((e.getY()- vOffset) / size, (e.getX()- hOffset) / size);
 			try {
 				if (cells[p.x][p.y] == VAC) {
