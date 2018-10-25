@@ -15,7 +15,7 @@ public class EpidemiologyWrapper3 extends JFrame {
         setSize(3*FRAMESIZE/2+HRZSPACE, FRAMESIZE+BTNSPACE);
 		add(new Epidemiology3(FRAMESIZE, FRAMESIZE));
         setResizable(false);
-        setTitle("SIR model, array based");
+        setTitle("SIR model array based");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
